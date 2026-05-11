@@ -83,6 +83,15 @@ def update_threshold(update: ThresholdUpdate, db: Session = Depends(get_db)):
     db.commit()
     return {"message": "Threshold updated successfully"}
 
+@router.post("/alerts/{alert_id}/resolve")
+def resolve_alert(alert_id: int, db: Session = Depends(get_db)):
+    alert = db.query(Alert).filter(Alert.id == alert_id).first()
+    if not alert:
+        raise HTTPException(status_code=404, detail="Alert not found")
+    alert.status = "RESOLVED"
+    db.commit()
+    return {"message": "Alert resolved successfully"}
+
 @router.get("/system/health")
 def system_health(db: Session = Depends(get_db)):
     # Check DB
